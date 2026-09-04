@@ -1,4 +1,5 @@
-﻿using BddTraining.Drivers;
+﻿using Allure.Net.Commons;
+using BddTraining.Drivers;
 using BddTraining.Utilities;
 using Reqnroll;
 
@@ -35,6 +36,11 @@ public sealed class Hooks
 
                 Console.WriteLine(
                     $"Failure screenshot saved: {screenshotPath}");
+
+                AllureApi.AddAttachment(
+                    "Failure Screenshot",
+                    "image/png",
+                    screenshotPath);
             }
         }
         finally
