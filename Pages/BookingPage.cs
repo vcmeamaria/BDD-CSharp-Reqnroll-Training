@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using BddTraining.Utilities;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
@@ -39,19 +40,34 @@ public sealed class BookingPage
 
     public void Open()
     {
+        LogManager.Information(
+            "Opening Shady Meadows booking site");
+
         _driver.Navigate().GoToUrl(
             "https://automationintesting.online/");
 
         Visible(_checkAvailabilityButton);
+
+        LogManager.Information(
+            "Shady Meadows booking site loaded");
     }
 
     public void SearchDisplayedStay()
     {
+        LogManager.Information(
+            "Searching for the displayed one-night stay");
+
         ClickWhenReady(_checkAvailabilityButton);
+
+        LogManager.Information(
+            "Availability search submitted");
     }
 
     public void OpenFirstAvailableRoom()
     {
+        LogManager.Information(
+            "Searching for the first available room");
+
         var clicked = _wait.Until(driver =>
         {
             try
@@ -78,6 +94,9 @@ public sealed class BookingPage
                 }
                 catch (ElementClickInterceptedException)
                 {
+                    LogManager.Warning(
+                        "Normal Selenium click was intercepted. Using JavaScript click fallback.");
+
                     JavaScriptClick(roomLink);
                 }
 
@@ -85,9 +104,9 @@ public sealed class BookingPage
             }
             catch (StaleElementReferenceException)
             {
-                // The page refreshed/re-rendered.
-                // Reqnroll/Selenium will retry and locate
-                // the current version of the room element.
+                LogManager.Warning(
+                    "Available room element became stale. Retrying with a fresh element.");
+
                 return false;
             }
         });
@@ -99,23 +118,46 @@ public sealed class BookingPage
         }
 
         Visible(_bookThisRoomHeading);
+
+        LogManager.Information(
+            "First available room opened");
     }
 
     public void StartReservation()
     {
+        LogManager.Information(
+            "Starting room reservation");
+
         ClickWhenReady(_reserveNowButton);
 
         Visible(_firstNameInput);
+
+        LogManager.Information(
+            "Guest details form displayed");
     }
 
     public void SubmitEmptyGuestForm()
     {
+        LogManager.Information(
+            "Submitting guest details form without entering details");
+
         ClickWhenReady(_reserveNowButton);
+
+        LogManager.Information(
+            "Empty guest details form submitted");
     }
 
     public string GetValidationMessage()
     {
-        return Visible(_validationAlert).Text;
+        LogManager.Information(
+            "Reading booking validation messages");
+
+        var message = Visible(_validationAlert).Text;
+
+        LogManager.Information(
+            "Booking validation alert displayed");
+
+        return message;
     }
 
     private IWebElement Visible(By by)
@@ -132,6 +174,9 @@ public sealed class BookingPage
             }
             catch (StaleElementReferenceException)
             {
+                LogManager.Warning(
+                    "Element became stale while waiting for visibility. Retrying.");
+
                 return null;
             }
         })!;
@@ -159,6 +204,9 @@ public sealed class BookingPage
                 }
                 catch (ElementClickInterceptedException)
                 {
+                    LogManager.Warning(
+                        "Normal Selenium click was intercepted. Using JavaScript click fallback.");
+
                     JavaScriptClick(element);
                 }
 
@@ -166,7 +214,9 @@ public sealed class BookingPage
             }
             catch (StaleElementReferenceException)
             {
-                // Find the element again on the next wait attempt.
+                LogManager.Warning(
+                    "Element became stale before it could be clicked. Retrying.");
+
                 return false;
             }
         });
