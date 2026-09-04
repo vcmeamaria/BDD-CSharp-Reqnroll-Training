@@ -7,6 +7,9 @@ public static class DriverManager
 {
     private static IWebDriver? _driver;
 
+    public static bool IsDriverStarted =>
+        _driver is not null;
+
     public static IWebDriver Driver =>
         _driver ?? throw new InvalidOperationException(
             "The WebDriver has not been started.");
